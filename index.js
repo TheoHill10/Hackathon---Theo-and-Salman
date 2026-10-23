@@ -13,7 +13,7 @@ const rl = readline.createInterface({
 
 function playGame(){
     introduction()
-    let positions = ["Top_L", "Top_M", "Top_R", "Mid_L", "Mid_M", "Mid_R", "Bot_L", "Bot_M", "Bot_R"]
+    let positions = ["top_l", "top_m", "top_r", "mid_l", "mid_m", "mid_r", "bot_l", "bot_l", "bot_r"]
     let grid = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
     playerChoice(positions, grid)
     
@@ -21,21 +21,37 @@ function playGame(){
 
 function introduction(){
     console.log('Welcome to Tic Tac Toe');
-    console.log('You will play as naughts and the computer will play as crosses');
-    console.log('To play: Enter a grid postion in the following box (e.g Top_L, Mid_M and Bot_R)');
+    console.log(' ');
+    console.log('You will play as crosses and the computer will play as naughts');
+    console.log('To play: Enter a grid postion in the following format e.g Top_L, Mid_M and Bot_R');
+    console.log(' ');
     console.log('Good luck');
+    console.log(' ');
     console.log(displayEmptyGrid());
 }
 
 function playerChoice(positions, grid){
+    let valid = false
     rl.question(`Where do you want to place? `, input => {
-    for(i=0;i<positions.length;i++){
-        if (input == positions[i]){
-            grid[i] = "X"
+        for(i=0;i<positions.length;i++){
+            
+            if (input.toLowerCase() == positions[i]){
+                grid[i] = "X" 
+                valid = true
+            }
         }
-    }
+        if (valid === false){
+            console.log("Invalid Command, Try again")
+            console.log('Enter a grid postion in the following format e.g Top_L, Mid_M and Bot_R');
+            playerChoice(positions, grid)
+            return
+        }
+
     displayUpdatedGrid(grid)
-    checkWinner(grid)
+    if (checkWinner(grid)){
+        oneMoreGame()
+        return
+        }
     computerChoice(positions, grid)
     });
     return positions 
@@ -48,7 +64,10 @@ function computerChoice(positions, grid){
     grid[random] = "O"
     console.log("Computer's turn now")
     displayUpdatedGrid(grid)
-    checkWinner(grid)
+    if (checkWinner(grid)){
+        oneMoreGame()
+        return
+    }
     playerChoice(positions, grid)
     return positions
 }
@@ -66,12 +85,6 @@ function checkWinner(grid){
             naughts_combination.push(i)
         }
     }
-
-// const isSubset = (array1, array2) =>
-//   array2.every((element) => array1.includes(element));
-
-// console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 7, 6])); // true
-// console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7])); // false
     let cross_win = false
     let naughts_win = false
     if (cross_win == false && naughts_win == false){
@@ -80,28 +93,40 @@ function checkWinner(grid){
             naughts_win = win_combination.every((element) => naughts_combination.includes(element))
              if (cross_win ==true){
                 console.log("Player has won!!")
-                //rl.close()
+                oneMoreGame()
+                return true
             }
-            else if (naughts_win ==true){
+            else if (naughts_win == true){
                 console.log("Computer won!!")
-                //rl.close()
+                oneMoreGame()
+                return true
             }
     }}
-
-    console.log(cross_combination)
-    console.log(naughts_combination)
-    return 
-
+    return false
 }
+
+function oneMoreGame(){
+    rl.question(`Do you want to play again? Type Y to play again or N to stop `, input => {
+        if (input == "Y"){
+            playGame()
+            
+        }
+        if (input == "N"){
+            rl.close()
+        }
+
+    });
+}
+
 
 function displayUpdatedGrid(grid){
     console.log('            |         |           ');
     console.log('            |         |           ');
-    console.log(`     ${grid[0]}      |     ${grid[1]}   |     ${grid[2]}      `);
+    console.log(`      ${grid[0]}     |     ${grid[1]}   |     ${grid[2]}      `);
     console.log('            |         |           ');
     console.log('------------|---------|-----------');
     console.log('            |         |           ');
-    console.log(`      ${grid[3]}     |    ${grid[4]}    |     ${grid[5]}     `);
+    console.log(`      ${grid[3]}     |     ${grid[4]}   |     ${grid[5]}     `);
     console.log('            |         |           ');
     console.log('------------|---------|-----------');
     console.log('            |         |           ');
