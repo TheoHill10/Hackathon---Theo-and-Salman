@@ -14,7 +14,9 @@ const rl = readline.createInterface({
 function playGame(){
     introduction()
     let positions = ["Top_L", "Top_M", "Top_R", "Mid_L", "Mid_M", "Mid_R", "Bot_L", "Bot_M", "Bot_R"]
-    playerChoice(positions)
+    let grid = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+    playerChoice(positions, grid)
+    
 }
 
 function introduction(){
@@ -25,44 +27,85 @@ function introduction(){
     console.log(displayEmptyGrid());
 }
 
-function playerChoice(positions){
+function playerChoice(positions, grid){
     rl.question(`Where do you want to place? `, input => {
     for(i=0;i<positions.length;i++){
         if (input == positions[i]){
-            positions[i] = "X"
+            grid[i] = "X"
         }
     }
-    displayUpdatedGrid(positions)
-    computerChoice(positions)
+    displayUpdatedGrid(grid)
+    checkWinner(grid)
+    computerChoice(positions, grid)
     });
     return positions 
 }
-function computerChoice(positions){
+function computerChoice(positions, grid){
     let random = Math.floor(Math.random()*positions.length)
-    while(positions[random] === "X" || positions[random] === "O"){
+    while(grid[random] === "X" || grid[random] === "O"){
         random = Math.floor(Math.random()*positions.length)
     }
-    positions[random] = "O"
-    displayUpdatedGrid(positions)
-    playerChoice(positions)
+    grid[random] = "O"
+    console.log("Computer's turn now")
+    displayUpdatedGrid(grid)
+    checkWinner(grid)
+    playerChoice(positions, grid)
     return positions
 }
 
-const winning_combinations = [[Top_L, Top_M, Top_R], [Mid_L, Mid_M, Mid_R]]
+function checkWinner(grid){
+    const winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    let naughts_combination = []
+    let cross_combination = []
 
+    for (i=0;i<grid.length;i++){
+        if (grid[i] === "X"){
+            cross_combination.push(i)
+        }
+        else if (grid[i] ==="O"){
+            naughts_combination.push(i)
+        }
+    }
 
-function displayUpdatedGrid(arr){
+// const isSubset = (array1, array2) =>
+//   array2.every((element) => array1.includes(element));
+
+// console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 7, 6])); // true
+// console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7])); // false
+    let cross_win = false
+    let naughts_win = false
+    if (cross_win == false && naughts_win == false){
+        for (win_combination of winning_combinations){ // [a,b,c]
+            cross_win = win_combination.every((element) => cross_combination.includes(element))
+            naughts_win = win_combination.every((element) => naughts_combination.includes(element))
+             if (cross_win ==true){
+                console.log("Player has won!!")
+                //rl.close()
+            }
+            else if (naughts_win ==true){
+                console.log("Computer won!!")
+                //rl.close()
+            }
+    }}
+
+    console.log(cross_combination)
+    console.log(naughts_combination)
+    return 
+
+}
+
+function displayUpdatedGrid(grid){
     console.log('            |         |           ');
     console.log('            |         |           ');
-    console.log(`     ${arr[0]}      |     ${arr[1]}   |     ${arr[2]}      `);
+    console.log(`     ${grid[0]}      |     ${grid[1]}   |     ${grid[2]}      `);
     console.log('            |         |           ');
     console.log('------------|---------|-----------');
     console.log('            |         |           ');
-    console.log(`      ${arr[3]}     |    ${arr[4]}    |     ${arr[5]}     `);
+    console.log(`      ${grid[3]}     |    ${grid[4]}    |     ${grid[5]}     `);
     console.log('            |         |           ');
     console.log('------------|---------|-----------');
     console.log('            |         |           ');
-    console.log(`      ${arr[6]}     |     ${arr[7]}   |     ${arr[8]}      `);
+    console.log(`      ${grid[6]}     |     ${grid[7]}   |     ${grid[8]}      `);
     console.log('            |         |           ');
     console.log('            |         |           ');
 }
